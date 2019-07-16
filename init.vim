@@ -21,6 +21,7 @@ set hidden
 set number
 set mouse=a
 set inccommand=split
+set autochdir
 
 set completeopt=noinsert,menuone,noselect
 
