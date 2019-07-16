@@ -22,6 +22,7 @@ set number
 set mouse=a
 set inccommand=split
 set autochdir
+set colorcolumn=80,120
 
 set completeopt=noinsert,menuone,noselect
 
