@@ -14,6 +14,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'glippi/yarn-vim'
 Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
 Plug 'editorconfig/editorconfig-vim'
+Plug 'vim-airline/vim-airline'
 call plug#end()
 
 colorscheme dracula
