@@ -24,7 +24,8 @@ let g:coc_global_extensions = [
       \'coc-tsserver',
       \'coc-prettier',
       \'coc-elixir',
-      \'coc-json'
+      \'coc-json',
+      \'coc-pairs'
       \]
 
 let g:netrw_banner = 0
