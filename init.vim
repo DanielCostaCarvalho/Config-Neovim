@@ -3,6 +3,8 @@ Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
 Plug 'editorconfig/editorconfig-vim'
 Plug 'vim-airline/vim-airline'
+Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 call plug#end()
 
 colorscheme dracula
@@ -31,4 +33,4 @@ let g:netrw_browse_split = 4
 let g:netrw_altv = 1
 let g:netrw_winsize = 25
 
-nnoremap <F1> :Vexplore<CR>
+nnoremap <F1> :NERDTreeToggle<CR>
