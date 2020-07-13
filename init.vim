@@ -5,9 +5,14 @@ Plug 'editorconfig/editorconfig-vim'
 Plug 'vim-airline/vim-airline'
 Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'patstockwell/vim-monokai-tasty'
+Plug 'pangloss/vim-javascript'
+Plug 'crusoexia/vim-javascript-lib'
+Plug 'maxmellon/vim-jsx-pretty'
+Plug 'styled-components/vim-styled-components'
 call plug#end()
 
-colorscheme dracula
+colorscheme vim-monokai-tasty
 
 set hidden
 set number
@@ -15,9 +20,16 @@ set mouse=a
 set inccommand=split
 set colorcolumn=80,120
 
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+set expandtab
+set autoindent
+set copyindent
+
 set completeopt=noinsert,menuone,noselect
 
-let g:coc_node_path = '/home/daniel/.asdf/installs/nodejs/12.16.2/bin/node'
+let g:coc_node_path = '/home/daniel/.asdf/installs/nodejs/12.18.2/bin/node'
 
 let g:coc_global_extensions = [
       \'coc-eslint',
