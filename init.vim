@@ -1,6 +1,6 @@
 call plug#begin()
 Plug 'dracula/vim', { 'as': 'dracula' }
-Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'editorconfig/editorconfig-vim'
 Plug 'vim-airline/vim-airline'
 Plug 'scrooloose/nerdtree'
@@ -29,7 +29,7 @@ set copyindent
 
 set completeopt=noinsert,menuone,noselect
 
-let g:coc_node_path = '/home/daniel/.asdf/installs/nodejs/12.18.2/bin/node'
+let g:coc_node_path = '/home/daniel/.asdf/installs/nodejs/14.16.1/bin/node'
 
 let g:coc_global_extensions = [
       \'coc-eslint',
@@ -37,7 +37,8 @@ let g:coc_global_extensions = [
       \'coc-prettier',
       \'coc-elixir',
       \'coc-json',
-      \'coc-pairs'
+      \'coc-pairs',
+      \'coc-flutter'
       \]
 
 let g:netrw_banner = 0
