@@ -1,6 +1,13 @@
 {
 	"eslint.autoFixOnSave": true,
-  "npm.binPath": "/home/daniel/.asdf/installs/nodejs/14.16.1/bin/npm",
+  "npm.binPath": "/home/daniel/.asdf/installs/nodejs/14.19.0/bin/npm",
   "eslint.format.enable": true,
-  "prettier.eslintIntegration": true
+  "prettier.eslintIntegration": true,
+  "coc.preferences.formatOnSaveFiletypes": [
+    "php"
+  ],
+  "php-cs-fixer.activateTool": "pint",
+  "phpstan.memoryLimit": "2G",
+  "cSpellExt.enableDictionaries": ["portuguese-brazilian"],
+  "cSpell.language": "en, pt_BR"
 }
