@@ -17,10 +17,15 @@ Plug 'TimUntersberger/neogit'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'goolord/alpha-nvim'
 Plug 'akinsho/bufferline.nvim', { 'tag': 'v3.*' }
+Plug 'lewis6991/gitsigns.nvim'
+Plug 'rafamadriz/friendly-snippets'
+Plug 'akinsho/toggleterm.nvim', {'tag' : '*'}
 call plug#end()
 
 colorscheme PaperColor
 
+set guifont=Jetbrains\ Mono:h12
+set number relativenumber
 set background=light
 set hidden
 set number
@@ -43,6 +48,7 @@ let g:coc_node_path = '/home/daniel/.asdf/installs/nodejs/14.19.0/bin/node'
 
 let g:coc_global_extensions = [
       \'coc-eslint',
+      \'@yaegassy/coc-volar',
       \'coc-tsserver',
       \'coc-prettier',
       \'coc-elixir',
@@ -56,7 +62,8 @@ let g:coc_global_extensions = [
       \'@yaegassy/coc-phpstan',
       \'coc-phpls',
       \'coc-spell-checker',
-      \'coc-cspell-dicts'
+      \'coc-cspell-dicts',
+      \'coc-snippets'
       \]
 
 let g:netrw_banner = 0
@@ -76,6 +83,8 @@ inoremap <silent><expr> <S-TAB>
       \ coc#pum#visible() ? coc#pum#prev(1) : "\<S-TAB>"
 inoremap <silent><expr> <CR>
       \ coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
+
+tnoremap <Esc> <C-\><C-n>
 
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
@@ -115,9 +124,15 @@ lua << EOF
           l = {"<cmd>BufferLineCloseLeft<cr>", "Close all left" },
           r = {"<cmd>BufferLineCloseRight<cr>", "Close all right" },
         },
-        h = { "<cmd>BufferLineMovePrev<cr>", "Prev" },
-        l = { "<cmd>BufferLineMoveNext<cr>", "Next" },
-        l = { "<cmd>BufferLineTogglePin<cr>", "Pin" },
+        o = {
+          name = "+order",
+          h = { "<cmd>BufferLineMovePrev<cr>", "Prev" },
+          l = { "<cmd>BufferLineMoveNext<cr>", "Next" },
+          p = { "<cmd>BufferLineTogglePin<cr>", "Pin" },
+        },
+        p = { "<cmd>BufferLinePick<cr>", "Pick" },
+        h = { "<cmd>BufferLineCyclePrev<cr>", "Prev" },
+        l = { "<cmd>BufferLineCycleNext<cr>", "Next" },
       },
       f = {
         name = "+file",
@@ -127,16 +142,17 @@ lua << EOF
       },
       o = {
         name = "+open",
-        p = {"<cmd>NvimTreeToggle<cr>", "Project sidebar"}
+        p = {"<cmd>NvimTreeToggle<cr>", "Project sidebar"},
+        t = {"<cmd>ToggleTerm<cr>", "Terminal"},
       },
       g = {
         name = "+git",
-        g = {"<cmd>Neogit<cr>", "Open neogit"}
+        g = {"<cmd>Neogit<cr>", "Open neogit"},
       },
       p = {
         name = "+Projects",
-        p = {"<cmd>Telescope projects<cr>", "Open project"}
-      }
+        p = {"<cmd>Telescope projects<cr>", "Open project"},
+      },
     },
   })
 
@@ -150,4 +166,6 @@ lua << EOF
       diagnostics = "coc"
     }
   }
+  require('gitsigns').setup()
+  require("toggleterm").setup()
 EOF

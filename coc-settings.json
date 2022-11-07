@@ -8,6 +8,7 @@
   ],
   "php-cs-fixer.activateTool": "pint",
   "phpstan.memoryLimit": "2G",
+  "intelephense.environment.phpVersion": "8.1.0",
   "cSpellExt.enableDictionaries": ["portuguese-brazilian"],
   "cSpell.language": "en, pt_BR"
 }
