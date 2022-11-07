@@ -142,7 +142,7 @@ lua << EOF
       },
       o = {
         name = "+open",
-        p = {"<cmd>NvimTreeToggle<cr>", "Project sidebar"},
+        p = {"<cmd>NvimTreeFindFileToggle<cr>", "Project sidebar"},
         t = {"<cmd>ToggleTerm<cr>", "Terminal"},
       },
       g = {
