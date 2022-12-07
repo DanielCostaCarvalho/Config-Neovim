@@ -1,13 +1,8 @@
 call plug#begin()
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'editorconfig/editorconfig-vim'
 Plug 'vim-airline/vim-airline'
 Plug 'nvim-tree/nvim-web-devicons'
 Plug 'nvim-tree/nvim-tree.lua'
-Plug 'pangloss/vim-javascript'
-Plug 'crusoexia/vim-javascript-lib'
-Plug 'maxmellon/vim-jsx-pretty'
-Plug 'styled-components/vim-styled-components'
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'folke/which-key.nvim'
 Plug 'nvim-lua/plenary.nvim'
@@ -18,8 +13,38 @@ Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'goolord/alpha-nvim'
 Plug 'akinsho/bufferline.nvim', { 'tag': 'v3.*' }
 Plug 'lewis6991/gitsigns.nvim'
-Plug 'rafamadriz/friendly-snippets'
 Plug 'akinsho/toggleterm.nvim', {'tag' : '*'}
+Plug 'windwp/nvim-autopairs'
+Plug 'jose-elias-alvarez/null-ls.nvim'
+Plug 'windwp/nvim-autopairs'
+Plug 'folke/trouble.nvim'
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'antoinemadec/FixCursorHold.nvim'
+Plug 'nvim-neotest/neotest'
+Plug 'olimorris/neotest-phpunit'
+Plug 'theutz/neotest-pest'
+Plug 'nvim-neotest/neotest-vim-test'
+Plug 'ThePrimeagen/refactoring.nvim'
+
+" lsp
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'neovim/nvim-lspconfig'
+Plug 'VonHeikemen/lsp-zero.nvim'
+
+" autocomplete
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-nvim-lua'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'saadparwaiz1/cmp_luasnip'
+
+" snippets
+Plug 'rafamadriz/friendly-snippets'
+Plug 'L3MON4D3/LuaSnip'
+
 call plug#end()
 
 colorscheme PaperColor
@@ -44,28 +69,6 @@ set clipboard+=unnamedplus
 
 set completeopt=menuone,noinsert,noselect
 
-let g:coc_node_path = '/home/daniel/.asdf/installs/nodejs/14.19.0/bin/node'
-
-let g:coc_global_extensions = [
-      \'coc-eslint',
-      \'@yaegassy/coc-volar',
-      \'coc-tsserver',
-      \'coc-prettier',
-      \'coc-elixir',
-      \'coc-json',
-      \'coc-css',
-      \'coc-html',
-      \'coc-java',
-      \'coc-pairs',
-      \'coc-flutter',
-      \'coc-php-cs-fixer',
-      \'@yaegassy/coc-phpstan',
-      \'coc-phpls',
-      \'coc-spell-checker',
-      \'coc-cspell-dicts',
-      \'coc-snippets'
-      \]
-
 let g:netrw_banner = 0
 let g:netrw_liststyle = 3
 let g:netrw_browse_split = 4
@@ -74,27 +77,7 @@ let g:netrw_winsize = 25
 
 let mapleader="\<space>"
 
-inoremap <silent><expr> <c-space> coc#refresh()
-inoremap <silent><expr> <TAB>
-      \ coc#pum#visible() ? coc#pum#next(1) : 
-      \ CheckBackspace() ? "\<Tab>" :
-      \ coc#refresh()
-inoremap <silent><expr> <S-TAB>
-      \ coc#pum#visible() ? coc#pum#prev(1) : "\<S-TAB>"
-inoremap <silent><expr> <CR>
-      \ coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
-
 tnoremap <Esc> <C-\><C-n>
-
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-function! CheckBackspace() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
 
 lua << EOF
   vim.g.loaded_netrw = 1
@@ -103,11 +86,7 @@ lua << EOF
   local wk = require("which-key")
 
   wk.setup {
-    -- your configuration comes here
-    -- or leave it empty to use the default settings
-    -- refer to the configuration section below
   }
-
 
   wk.register({
     ["<leader>"] = {
@@ -153,19 +132,124 @@ lua << EOF
         name = "+Projects",
         p = {"<cmd>Telescope projects<cr>", "Open project"},
       },
+      l = {
+        name = "+LSP",
+        m = {"<cmd>Mason<cr>", "Manage LSP"},
+        l = {"<cmd>TroubleToggle<cr>", "List diagnostics"},
+        a = {"<cmd>TroubleToggle quickfix<cr>", "List diagnostics quickfix"},
+        d = {"<cmd>TroubleToggle lsp_definitions<cr>", "Show definitions"},
+        t = {"<cmd>TroubleToggle lsp_type_definitions<cr>", "Show type definitions"},
+        r = {"<cmd>TroubleToggle lsp_references<cr>", "Show references"},
+      },
+      r = {
+        name = "+Refactoring",
+        r = {"<cmd>lua require('telescope').extensions.refactoring.refactors()<CR>", "Select refactoring"},
+      },
     },
   })
 
   require("project_nvim").setup {}
   require('telescope').load_extension('projects')
+  require('telescope').load_extension('refactoring')
   require("nvim-tree").setup()
   require"alpha".setup(require"alpha.themes.dashboard".config)
   require("bufferline").setup{
     options = {
       numbers = "ordinal",
-      diagnostics = "coc"
+      diagnostics = "nvim_lsp"
     }
   }
   require('gitsigns').setup()
   require("toggleterm").setup()
+  require('refactoring').setup({})
+
+  local lsp = require('lsp-zero')
+
+  lsp.preset('recommended')
+
+  lsp.nvim_workspace()
+  lsp.setup()
+
+  local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+
+  local async_formatting = function(bufnr)
+    bufnr = bufnr or vim.api.nvim_get_current_buf()
+
+    vim.lsp.buf_request(
+        bufnr,
+        "textDocument/formatting",
+        vim.lsp.util.make_formatting_params({}),
+        function(err, res, ctx)
+            if err then
+                local err_msg = type(err) == "string" and err or err.message
+                -- you can modify the log message / level (or ignore it completely)
+                vim.notify("formatting: " .. err_msg, vim.log.levels.WARN)
+                return
+            end
+
+            -- don't apply results if buffer is unloaded or has been modified
+            if not vim.api.nvim_buf_is_loaded(bufnr) or vim.api.nvim_buf_get_option(bufnr, "modified") then
+                return
+            end
+
+            if res then
+                local client = vim.lsp.get_client_by_id(ctx.client_id)
+                vim.lsp.util.apply_text_edits(res, bufnr, client and client.offset_encoding or "utf-16")
+                vim.api.nvim_buf_call(bufnr, function()
+                    vim.cmd("silent noautocmd update")
+                end)
+            end
+        end
+    )
+end
+
+  local null_ls = require("null-ls")
+  null_ls.setup({
+    sources = {
+      null_ls.builtins.diagnostics.cspell.with({
+        diagnostics_postprocess = function(diagnostic)
+          diagnostic.severity = vim.diagnostic.severity["WARN"]
+        end,
+      }),
+      null_ls.builtins.code_actions.cspell,
+      null_ls.builtins.code_actions.refactoring,
+      null_ls.builtins.formatting.eslint_d,
+      null_ls.builtins.code_actions.eslint_d,
+      null_ls.builtins.diagnostics.eslint_d,
+      null_ls.builtins.formatting.pint,
+      null_ls.builtins.diagnostics.phpstan,
+      null_ls.builtins.formatting.blade_formatter,
+    },
+    diagnostics_format = "#{m} - #{s} (#{c})",
+    -- you can reuse a shared lspconfig on_attach callback here
+    on_attach = function(client, bufnr)
+      if client.supports_method("textDocument/formatting") then
+        vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+        vim.api.nvim_create_autocmd("BufWritePre", {
+          group = augroup,
+          buffer = bufnr,
+          callback = function()
+            vim.lsp.buf.format({bufnr = bufnr})
+          end,
+        })
+      end
+    end,
+  })
+  require("nvim-autopairs").setup {}
+  require("trouble").setup {
+    -- your configuration comes here
+    -- or leave it empty to use the default settings
+    -- refer to the configuration section below
+  }
+  require("neotest").setup({
+    adapters = {
+      require("neotest-phpunit"),
+      require('neotest-pest')({
+        pest_cmd = function()
+          return "vendor/bin/pest"
+        end
+      }),
+      require("neotest-vim-test")({ ignore_filetypes = { "php" } }),
+    },
+  })
 EOF
