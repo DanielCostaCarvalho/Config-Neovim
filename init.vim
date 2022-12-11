@@ -20,6 +20,7 @@ Plug 'windwp/nvim-autopairs'
 Plug 'folke/trouble.nvim'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'antoinemadec/FixCursorHold.nvim'
+Plug 'f-person/git-blame.nvim'
 Plug 'nvim-neotest/neotest'
 Plug 'olimorris/neotest-phpunit'
 Plug 'theutz/neotest-pest'
@@ -95,34 +96,35 @@ lua << EOF
       },
       b = {
         name = "+buffer",
-        k = { "<cmd>bdelete<cr>", "Kill" },
+        k = { "<cmd>bdelete<cr>", "[K]ill" },
         c = { 
           name = "+close",
-          c = { "<cmd>bdelete<cr>", "Close current" },
-          p = {"<cmd>BufferLinePickClose<cr>", "Pick to close" },
-          l = {"<cmd>BufferLineCloseLeft<cr>", "Close all left" },
-          r = {"<cmd>BufferLineCloseRight<cr>", "Close all right" },
+          c = { "<cmd>bdelete<cr>", "Close [C]urrent" },
+          p = {"<cmd>BufferLinePickClose<cr>", "[P]ick to close" },
+          l = {"<cmd>BufferLineCloseLeft<cr>", "Close all [L]eft" },
+          r = {"<cmd>BufferLineCloseRight<cr>", "Close all [R]ight" },
         },
         o = {
           name = "+order",
           h = { "<cmd>BufferLineMovePrev<cr>", "Prev" },
           l = { "<cmd>BufferLineMoveNext<cr>", "Next" },
-          p = { "<cmd>BufferLineTogglePin<cr>", "Pin" },
+          p = { "<cmd>BufferLineTogglePin<cr>", "[P]in" },
         },
-        p = { "<cmd>BufferLinePick<cr>", "Pick" },
+        p = { "<cmd>BufferLinePick<cr>", "[P]ick" },
         h = { "<cmd>BufferLineCyclePrev<cr>", "Prev" },
         l = { "<cmd>BufferLineCycleNext<cr>", "Next" },
       },
       f = {
         name = "+file",
-        f = { "<cmd>Telescope find_files<cr>", "Find File" },
-        r = { "<cmd>Telescope oldfiles<cr>", "Open Recent File" },
-        n = { "<cmd>enew<cr>", "New File" },
+        f = { "<cmd>Telescope find_files<cr>", "[F]ind File" },
+        r = { "<cmd>Telescope oldfiles<cr>", "Open [R]ecent File" },
+        n = { "<cmd>enew<cr>", "[N]ew File" },
       },
       o = {
         name = "+open",
-        p = {"<cmd>NvimTreeFindFileToggle<cr>", "Project sidebar"},
-        t = {"<cmd>ToggleTerm<cr>", "Terminal"},
+        p = {"<cmd>NvimTreeFindFileToggle<cr>", "[P]roject sidebar"},
+        t = {"<cmd>ToggleTerm<cr>", "[T]erminal"},
+        s = {"<cmd>lua require('neotest').summary.toggle()<CR>", "Show test [S]ummary"},
       },
       g = {
         name = "+git",
@@ -130,23 +132,41 @@ lua << EOF
       },
       p = {
         name = "+Projects",
-        p = {"<cmd>Telescope projects<cr>", "Open project"},
+        p = {"<cmd>Telescope projects<cr>", "Open [P]roject"},
+        s = {"<cmd>Telescope grep_string<cr>", "[S]earch in project"},
       },
       l = {
         name = "+LSP",
-        m = {"<cmd>Mason<cr>", "Manage LSP"},
-        l = {"<cmd>TroubleToggle<cr>", "List diagnostics"},
-        a = {"<cmd>TroubleToggle quickfix<cr>", "List diagnostics quickfix"},
-        d = {"<cmd>TroubleToggle lsp_definitions<cr>", "Show definitions"},
-        t = {"<cmd>TroubleToggle lsp_type_definitions<cr>", "Show type definitions"},
-        r = {"<cmd>TroubleToggle lsp_references<cr>", "Show references"},
+        m = {"<cmd>Mason<cr>", "[M]anage LSP"},
+        l = {"<cmd>TroubleToggle<cr>", "[L]ist diagnostics"},
+        q = {"<cmd>TroubleToggle quickfix<cr>", "List diagnostics [Q]uickfix"},
+        d = {"<cmd>TroubleToggle lsp_definitions<cr>", "Show [D]efinitions"},
+        t = {"<cmd>TroubleToggle lsp_type_definitions<cr>", "Show [T]ype definitions"},
+        r = {"<cmd>TroubleToggle lsp_references<cr>", "Show [R]eferences"},
       },
+      t = {
+        name = "+Test",
+        r = {"<cmd>lua require('neotest').run.run()<CR>", "[R]un tests"},
+        o = {"<cmd>lua require('neotest').output_panel.toggle()<CR>", "Show tests [O]utput"},
+        s = {
+          name = "+Summary",
+          s = {"<cmd>lua require('neotest').summary.toggle()<CR>", "[S]how summary"},
+          r = {"<cmd>lua require('neotest').summary.run_marked()<CR>", "[R]un marked"},
+          m = {"<cmd>lua require('neotest').summary.marked()<CR>", "Show [M]arked"},
+        }
+      },
+    },
+  })
+
+  wk.register({
+    ["<leader>"] = {
       r = {
         name = "+Refactoring",
         r = {"<cmd>lua require('telescope').extensions.refactoring.refactors()<CR>", "Select refactoring"},
       },
     },
-  })
+  }, 
+  {mode = "v"})
 
   require("project_nvim").setup {}
   require('telescope').load_extension('projects')
@@ -243,7 +263,7 @@ end
   }
   require("neotest").setup({
     adapters = {
-      require("neotest-phpunit"),
+      -- require("neotest-phpunit"),
       require('neotest-pest')({
         pest_cmd = function()
           return "vendor/bin/pest"
