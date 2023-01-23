@@ -178,7 +178,28 @@ lua << EOF
   require("project_nvim").setup {}
   require('telescope').load_extension('projects')
   require('telescope').load_extension('refactoring')
-  require("nvim-tree").setup()
+  require("nvim-tree").setup({
+      update_focused_file = {
+        enable = true,
+        update_root = true,
+      },
+      diagnostics = {
+        enable = true,
+        show_on_dirs = false,
+        show_on_open_dirs = true,
+        debounce_delay = 50,
+        severity = {
+          min = vim.diagnostic.severity.HINT,
+          max = vim.diagnostic.severity.ERROR,
+        },
+        icons = {
+          hint = "",
+          info = "",
+          warning = "",
+          error = "",
+        },
+      },
+  })
   require"alpha".setup(require"alpha.themes.dashboard".config)
   require("bufferline").setup{
     options = {
