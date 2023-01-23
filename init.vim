@@ -96,6 +96,7 @@ lua << EOF
       },
       b = {
         name = "+buffer",
+        a = { "<cmd>Telescope buffers<cr>", "List [A]ll" },
         k = { "<cmd>bdelete<cr>", "[K]ill" },
         c = { 
           name = "+close",
@@ -133,12 +134,18 @@ lua << EOF
       p = {
         name = "+Projects",
         p = {"<cmd>Telescope projects<cr>", "Open [P]roject"},
-        s = {"<cmd>Telescope grep_string<cr>", "[S]earch in project"},
+        s = {"<cmd>Telescope live_grep<cr>", "[S]earch in project"},
+        f = {"<cmd>Telescope find_files<cr>", "Find [F]ile"},
+      },
+      s = {
+        name = "+Search",
+        p = {"<cmd>Telescope live_grep<cr>", "Search in [P]roject"},
+        w = {"<cmd>Telescope grep_string<cr>", "Search [W]ord in Project"},
       },
       l = {
         name = "+LSP",
         m = {"<cmd>Mason<cr>", "[M]anage LSP"},
-        l = {"<cmd>TroubleToggle<cr>", "[L]ist diagnostics"},
+        l = {"<cmd>TroubleToggle document_diagnostics<cr>", "[L]ist diagnostics"},
         q = {"<cmd>TroubleToggle quickfix<cr>", "List diagnostics [Q]uickfix"},
         d = {"<cmd>TroubleToggle lsp_definitions<cr>", "Show [D]efinitions"},
         t = {"<cmd>TroubleToggle lsp_type_definitions<cr>", "Show [T]ype definitions"},
