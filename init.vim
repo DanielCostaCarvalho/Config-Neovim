@@ -1,37 +1,45 @@
 call plug#begin()
-Plug 'editorconfig/editorconfig-vim'
+Plug 'editorconfig/editorconfig-vim' " add editorconfig
+
+Plug 'nvim-lua/plenary.nvim' " dependency
+Plug 'ahmedkhalf/project.nvim' " manage projects
+Plug 'mg979/vim-visual-multi', {'branch': 'master'} " multi-line edit
+Plug 'ThePrimeagen/refactoring.nvim' " auto refactoring
+
+" Telescope
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.0' }
+Plug 'nvim-telescope/telescope-ui-select.nvim'
+
+" Visual
+Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'vim-airline/vim-airline'
+Plug 'akinsho/bufferline.nvim', { 'tag': 'v3.*' }
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'goolord/alpha-nvim'
 Plug 'nvim-tree/nvim-web-devicons'
 Plug 'nvim-tree/nvim-tree.lua'
-Plug 'NLKNguyen/papercolor-theme'
-Plug 'folke/which-key.nvim'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.0' }
-Plug 'ahmedkhalf/project.nvim'
-Plug 'TimUntersberger/neogit'
-Plug 'mg979/vim-visual-multi', {'branch': 'master'}
-Plug 'goolord/alpha-nvim'
-Plug 'akinsho/bufferline.nvim', { 'tag': 'v3.*' }
-Plug 'lewis6991/gitsigns.nvim'
 Plug 'akinsho/toggleterm.nvim', {'tag' : '*'}
-Plug 'windwp/nvim-autopairs'
-Plug 'jose-elias-alvarez/null-ls.nvim'
-Plug 'windwp/nvim-autopairs'
-Plug 'folke/trouble.nvim'
-Plug 'nvim-treesitter/nvim-treesitter'
-Plug 'antoinemadec/FixCursorHold.nvim'
-Plug 'f-person/git-blame.nvim'
+
+" Git
+Plug 'TimUntersberger/neogit'
+Plug 'lewis6991/gitsigns.nvim'
+
+" Tests
 Plug 'nvim-neotest/neotest'
 Plug 'olimorris/neotest-phpunit'
 Plug 'theutz/neotest-pest'
 Plug 'nvim-neotest/neotest-vim-test'
-Plug 'ThePrimeagen/refactoring.nvim'
+
+" Motion
+Plug 'ggandor/leap.nvim'
 
 " lsp
 Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'VonHeikemen/lsp-zero.nvim'
+Plug 'jose-elias-alvarez/null-ls.nvim'
+Plug 'folke/trouble.nvim'
 
 " autocomplete
 Plug 'hrsh7th/cmp-nvim-lsp'
@@ -41,10 +49,14 @@ Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'saadparwaiz1/cmp_luasnip'
+Plug 'windwp/nvim-autopairs'
 
 " snippets
 Plug 'rafamadriz/friendly-snippets'
 Plug 'L3MON4D3/LuaSnip'
+
+" key bindings
+Plug 'folke/which-key.nvim'
 
 call plug#end()
 
@@ -65,6 +77,7 @@ set shiftwidth=2
 set expandtab
 set autoindent
 set copyindent
+set scrolloff=4
 
 set clipboard+=unnamedplus
 
@@ -79,6 +92,8 @@ let g:netrw_winsize = 25
 let mapleader="\<space>"
 
 tnoremap <Esc> <C-\><C-n>
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
 
 lua << EOF
   vim.g.loaded_netrw = 1
@@ -141,10 +156,12 @@ lua << EOF
         name = "+Search",
         p = {"<cmd>Telescope live_grep<cr>", "Search in [P]roject"},
         w = {"<cmd>Telescope grep_string<cr>", "Search [W]ord in Project"},
+        r = {[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], "Search and [R]eplace"},
       },
       l = {
         name = "+LSP",
         m = {"<cmd>Mason<cr>", "[M]anage LSP"},
+        a = {"<cmd>lua vim.lsp.buf.code_action()<cr>", "Code [A]ctions"},
         l = {"<cmd>TroubleToggle document_diagnostics<cr>", "[L]ist diagnostics"},
         q = {"<cmd>TroubleToggle quickfix<cr>", "List diagnostics [Q]uickfix"},
         d = {"<cmd>TroubleToggle lsp_definitions<cr>", "Show [D]efinitions"},
@@ -178,6 +195,7 @@ lua << EOF
   require("project_nvim").setup {}
   require('telescope').load_extension('projects')
   require('telescope').load_extension('refactoring')
+  require('telescope').load_extension('ui-select')
   require("nvim-tree").setup({
       update_focused_file = {
         enable = true,
@@ -204,10 +222,26 @@ lua << EOF
   require("bufferline").setup{
     options = {
       numbers = "ordinal",
-      diagnostics = "nvim_lsp"
+      diagnostics = "nvim_lsp",
+      offsets = {
+        {
+            filetype = "NvimTree",
+            text = "File Explorer",
+            text_align = "center",
+            separator = true,
+        }
+      },
     }
   }
-  require('gitsigns').setup()
+  require('gitsigns').setup({
+    current_line_blame = true,
+    current_line_blame_opts = {
+      virt_text = true,
+      virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+      delay = 0,
+      ignore_whitespace = false,
+    },
+  })
   require("toggleterm").setup()
   require('refactoring').setup({})
 
@@ -219,7 +253,11 @@ lua << EOF
   lsp.setup_nvim_cmp({
     completion = {
       keyword_length = 1
-    }
+    },
+    sources = {
+      {name = "nvim_lsp", keyword_length = 1},
+      {name = "luasnip", keyword_length = 1},
+    },
   })
 
   local cmp = require('cmp')
@@ -315,4 +353,5 @@ end
       require("neotest-vim-test")({ ignore_filetypes = { "php" } }),
     },
   })
+  require('leap').add_default_mappings()
 EOF
