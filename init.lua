@@ -46,6 +46,11 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   'editorconfig/editorconfig-vim',
   'nvim-lua/plenary.nvim',
+  {'rebelot/terminal.nvim', opts = {
+    layout = {
+      open_cmd = "float"
+    }
+  } },
   { 'ahmedkhalf/project.nvim',       config = {},      name = 'project_nvim' }, -- manage projects
   { 'mg979/vim-visual-multi',        branch = 'master' }, -- multi-line edit
   { 'ThePrimeagen/refactoring.nvim', config = true }, -- auto refactoring
@@ -76,6 +81,20 @@ require("lazy").setup({
   { 'NLKNguyen/papercolor-theme', lazy = false },
   'goolord/alpha-nvim',
   'nvim-tree/nvim-web-devicons',
+  {
+  "nvim-neo-tree/neo-tree.nvim",
+    branch = "v2.x",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+      "MunifTanjim/nui.nvim",
+    },
+    opts = {
+      filesystem = {
+        follow_current_file = true
+      }
+    }
+  },--[[
   { 'nvim-tree/nvim-tree.lua',
     opts = {
       update_focused_file = {
@@ -99,8 +118,7 @@ require("lazy").setup({
         },
       },
     }
-  },
-  { 'akinsho/toggleterm.nvim',    version = '*', config = true },
+  },]]
 
   -- Git
   'TimUntersberger/neogit',
@@ -116,26 +134,6 @@ require("lazy").setup({
     }
   },
 
-  -- Tests
-  { 'nvim-neotest/neotest',
-    config = function()
-      require("neotest").setup({
-        adapters = {
-          -- require("neotest-phpunit"),
-          require('neotest-pest')({
-            pest_cmd = function()
-              return "vendor/bin/pest"
-            end
-          }),
-          require("neotest-vim-test")({ ignore_filetypes = { "php" } }),
-        },
-      })
-    end
-  },
-  'olimorris/neotest-phpunit',
-  'theutz/neotest-pest',
-  'nvim-neotest/neotest-vim-test',
-
   -- HTTP requests
   { "rest-nvim/rest.nvim",
     dependencies = {
@@ -146,16 +144,13 @@ require("lazy").setup({
     }
   },
 
-  -- Motion
-  'ggandor/leap.nvim',
-
   -- lsp
   'williamboman/mason.nvim',
   'williamboman/mason-lspconfig.nvim',
   'neovim/nvim-lspconfig',
   'VonHeikemen/lsp-zero.nvim',
   'jose-elias-alvarez/null-ls.nvim',
-  { 'folke/trouble.nvim',    config = true },
+  { 'folke/trouble.nvim', config = true },
 
   -- autocomplete
   'hrsh7th/cmp-nvim-lsp',
@@ -218,9 +213,8 @@ wk.register({
     },
     o = {
       name = "+open",
-      p = { "<cmd>NvimTreeFindFileToggle<cr>", "[P]roject sidebar" },
-      t = { "<cmd>ToggleTerm<cr>", "[T]erminal" },
-      s = { "<cmd>lua require('neotest').summary.toggle()<CR>", "Show test [S]ummary" },
+      p = { "<cmd>Neotree toggle<cr>", "[P]roject sidebar" },
+      t = { "<cmd>TermToggle<cr>", "[T]erminal" },
     },
     g = {
       name = "+git",
@@ -248,17 +242,6 @@ wk.register({
       d = { "<cmd>TroubleToggle lsp_definitions<cr>", "Show [D]efinitions" },
       t = { "<cmd>TroubleToggle lsp_type_definitions<cr>", "Show [T]ype definitions" },
       r = { "<cmd>TroubleToggle lsp_references<cr>", "Show [R]eferences" },
-    },
-    t = {
-      name = "+Test",
-      r = { "<cmd>lua require('neotest').run.run()<CR>", "[R]un tests" },
-      o = { "<cmd>lua require('neotest').output_panel.toggle()<CR>", "Show tests [O]utput" },
-      s = {
-        name = "+Summary",
-        s = { "<cmd>lua require('neotest').summary.toggle()<CR>", "[S]how summary" },
-        r = { "<cmd>lua require('neotest').summary.run_marked()<CR>", "[R]un marked" },
-        m = { "<cmd>lua require('neotest').summary.marked()<CR>", "Show [M]arked" },
-      }
     },
     v = {
       name = "+Visual",
@@ -308,6 +291,11 @@ lsp.setup_nvim_cmp({
   mapping = cmp_mappings
 })
 
+lsp.default_keymaps({
+  buffer = bufnr,
+  preserve_mappings = false
+})
+
 lsp.setup()
 
 local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
@@ -344,4 +332,3 @@ null_ls.setup({
     end
   end,
 })
-require('leap').add_default_mappings()
