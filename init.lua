@@ -46,11 +46,6 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   'editorconfig/editorconfig-vim',
   'nvim-lua/plenary.nvim',
-  {'rebelot/terminal.nvim', opts = {
-    layout = {
-      open_cmd = "float"
-    }
-  } },
   { 'ahmedkhalf/project.nvim',       config = {},      name = 'project_nvim' }, -- manage projects
   { 'mg979/vim-visual-multi',        branch = 'master' }, -- multi-line edit
   { 'ThePrimeagen/refactoring.nvim', config = true }, -- auto refactoring
@@ -80,7 +75,9 @@ require("lazy").setup({
   },
   { 'NLKNguyen/papercolor-theme', lazy = false },
   'goolord/alpha-nvim',
-  'nvim-tree/nvim-web-devicons',
+
+  -- File Navigation
+  { "ThePrimeagen/harpoon", dependencies = "nvim-lua/plenary.nvim", config = true },
   {
   "nvim-neo-tree/neo-tree.nvim",
     branch = "v2.x",
@@ -90,38 +87,19 @@ require("lazy").setup({
       "MunifTanjim/nui.nvim",
     },
     opts = {
+      close_if_last_window = true,
+      enable_normal_mode_for_inputs = true,
       filesystem = {
-        follow_current_file = true
+        follow_current_file = true,
+        filtered_items = {
+            hide_dotfiles = false,
+        }
       }
     }
-  },--[[
-  { 'nvim-tree/nvim-tree.lua',
-    opts = {
-      update_focused_file = {
-        enable = true,
-        update_root = true,
-      },
-      diagnostics = {
-        enable = true,
-        show_on_dirs = false,
-        show_on_open_dirs = true,
-        debounce_delay = 50,
-        severity = {
-          min = vim.diagnostic.severity.HINT,
-          max = vim.diagnostic.severity.ERROR,
-        },
-        icons = {
-          hint = "",
-          info = "",
-          warning = "",
-          error = "",
-        },
-      },
-    }
-  },]]
+  },
 
-  -- Git
-  'TimUntersberger/neogit',
+  -- Git 	
+  { "NeogitOrg/neogit", dependencies = "nvim-lua/plenary.nvim", config = true },
   { 'lewis6991/gitsigns.nvim',
     opts = {
       current_line_blame = true,
@@ -214,7 +192,7 @@ wk.register({
     o = {
       name = "+open",
       p = { "<cmd>Neotree toggle<cr>", "[P]roject sidebar" },
-      t = { "<cmd>TermToggle<cr>", "[T]erminal" },
+      t = { "<cmd>lua require('harpoon.term').gotoTerminal(1)<cr>", "[T]erminal" },
     },
     g = {
       name = "+git",
@@ -233,10 +211,26 @@ wk.register({
       w = { "<cmd>Telescope grep_string<cr>", "Search [W]ord in Project" },
       r = { [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], "Search and [R]eplace" },
     },
+    h = {
+      name = "+Harpoon",
+      a = { "<cmd>lua require('harpoon.mark').add_file()<cr>", "[A]dd file" },
+      m = { "<cmd>lua require('harpoon.ui').toggle_quick_menu()<cr>", "Toggle [M]enu" },
+      h = { "<cmd>lua require('harpoon.ui').nav_prev()<cr>", "Navigate to prev" },
+      l = { "<cmd>lua require('harpoon.ui').nav_next()<cr>", "Navigate to next" },
+      s = { "<cmd>Telescope harpoon marks<cr>", "[S]how marks" },
+      t = { "<cmd>lua require('harpoon.term').gotoTerminal(1)<cr>", "Open [T]erminal" },
+    },
     l = {
       name = "+LSP",
       m = { "<cmd>Mason<cr>", "[M]anage LSP" },
-      a = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "Code [A]ctions" },
+      a = { name = "Code [A]ctions",
+        a = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "Code [A]ctions" },
+        r = { "<cmd>lua vim.lsp.buf.references()<cr>", "Lista all [R]eferences" },
+        f = { "<cmd>lua vim.lsp.buf.format()<cr>", "[F]ormat code" },
+        c = { "<cmd>lua vim.lsp.buf.rename()<cr>", "[C]hange name" },
+        s = { "<cmd>lua vim.lsp.buf.signature_help()<cr>", "[S]ignature help" },
+        d = { "<cmd>lua vim.lsp.buf.open_float()<cr>", "Show [D]iagnostics" },
+      },
       l = { "<cmd>TroubleToggle document_diagnostics<cr>", "[L]ist diagnostics" },
       q = { "<cmd>TroubleToggle quickfix<cr>", "List diagnostics [Q]uickfix" },
       d = { "<cmd>TroubleToggle lsp_definitions<cr>", "Show [D]efinitions" },
@@ -265,6 +259,7 @@ wk.register({
 require('telescope').load_extension('projects')
 require('telescope').load_extension('refactoring')
 require('telescope').load_extension('ui-select')
+require("telescope").load_extension('harpoon')
 require "alpha".setup(require "alpha.themes.dashboard".config)
 
 local lsp = require('lsp-zero')
