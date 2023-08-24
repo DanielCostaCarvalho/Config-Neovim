@@ -15,6 +15,10 @@ vim.opt.autoindent = true
 vim.opt.copyindent = true
 vim.opt.scrolloff = 4
 
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.opt.termguicolors = true
+
 vim.opt.clipboard = "unnamedplus"
 
 vim.opt.completeopt = "menuone,noinsert,noselect"
@@ -53,22 +57,32 @@ require("lazy").setup({
   -- File Navigation
   { "ThePrimeagen/harpoon",       dependencies = "nvim-lua/plenary.nvim", config = true },
   {
-    "nvim-neo-tree/neo-tree.nvim",
-    branch = "v2.x",
+    'nvim-tree/nvim-tree.lua',
+    lazy = false,
     dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
-      "MunifTanjim/nui.nvim",
+      "nvim-tree/nvim-web-devicons",
     },
     opts = {
-      close_if_last_window = true,
-      enable_normal_mode_for_inputs = true,
-      filesystem = {
-        follow_current_file = true,
-        filtered_items = {
-          hide_dotfiles = false,
-        }
-      }
+      update_focused_file = {
+        enable = true,
+        update_root = true,
+      },
+      diagnostics = {
+        enable = true,
+        show_on_dirs = false,
+        show_on_open_dirs = true,
+        debounce_delay = 50,
+        severity = {
+          min = vim.diagnostic.severity.HINT,
+          max = vim.diagnostic.severity.ERROR,
+        },
+        icons = {
+          hint = "",
+          info = "",
+          warning = "",
+          error = "",
+        },
+      },
     }
   },
 
@@ -165,7 +179,7 @@ wk.register({
     },
     o = {
       name = "+open",
-      p = { "<cmd>Neotree toggle<cr>", "[P]roject sidebar" },
+      p = { "<cmd>NvimTreeToggle<cr>", "[P]roject sidebar" },
       t = { "<cmd>lua require('harpoon.term').gotoTerminal(1)<cr>", "[T]erminal" },
     },
     g = {
