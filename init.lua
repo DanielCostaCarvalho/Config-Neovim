@@ -19,14 +19,6 @@ vim.opt.clipboard = "unnamedplus"
 
 vim.opt.completeopt = "menuone,noinsert,noselect"
 
-vim.g.netrw_banner = 0
-vim.g.netrw_liststyle = 3
-vim.g.netrw_browse_split = 4
-vim.g.netrw_altv = 1
-vim.g.netrw_winsize = 25
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
 vim.g.mapleader = " "
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -47,8 +39,7 @@ require("lazy").setup({
   'editorconfig/editorconfig-vim',
   'nvim-lua/plenary.nvim',
   { 'ahmedkhalf/project.nvim',       config = {},      name = 'project_nvim' }, -- manage projects
-  { 'mg979/vim-visual-multi',        branch = 'master' }, -- multi-line edit
-  { 'ThePrimeagen/refactoring.nvim', config = true }, -- auto refactoring
+  { 'ThePrimeagen/refactoring.nvim', config = true },                           -- auto refactoring
 
   -- Telescope
   { 'nvim-telescope/telescope.nvim', version = '0.1.0' },
@@ -57,29 +48,12 @@ require("lazy").setup({
   -- Visual
   'nvim-treesitter/nvim-treesitter',
   'vim-airline/vim-airline',
-  { 'akinsho/bufferline.nvim', version = 'v3.*',
-    opts = {
-      options = {
-        numbers = "ordinal",
-        diagnostics = "nvim_lsp",
-        offsets = {
-          {
-            filetype = "NvimTree",
-            text = "File Explorer",
-            text_align = "center",
-            separator = true,
-          }
-        },
-      }
-    }
-  },
   { 'NLKNguyen/papercolor-theme', lazy = false },
-  'goolord/alpha-nvim',
 
   -- File Navigation
-  { "ThePrimeagen/harpoon", dependencies = "nvim-lua/plenary.nvim", config = true },
+  { "ThePrimeagen/harpoon",       dependencies = "nvim-lua/plenary.nvim", config = true },
   {
-  "nvim-neo-tree/neo-tree.nvim",
+    "nvim-neo-tree/neo-tree.nvim",
     branch = "v2.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -92,20 +66,21 @@ require("lazy").setup({
       filesystem = {
         follow_current_file = true,
         filtered_items = {
-            hide_dotfiles = false,
+          hide_dotfiles = false,
         }
       }
     }
   },
 
   -- Git 	
-  { "NeogitOrg/neogit", dependencies = "nvim-lua/plenary.nvim", config = true },
-  { 'lewis6991/gitsigns.nvim',
+  { "NeogitOrg/neogit",      dependencies = "nvim-lua/plenary.nvim", config = true },
+  {
+    'lewis6991/gitsigns.nvim',
     opts = {
       current_line_blame = true,
       current_line_blame_opts = {
         virt_text = true,
-        virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+        virt_text_pos = 'right_align', -- 'eol' | 'overlay' | 'right_align'
         delay = 0,
         ignore_whitespace = false,
       },
@@ -113,7 +88,8 @@ require("lazy").setup({
   },
 
   -- HTTP requests
-  { "rest-nvim/rest.nvim",
+  {
+    "rest-nvim/rest.nvim",
     dependencies = {
       'nvim-lua/plenary.nvim',
     },
@@ -127,9 +103,7 @@ require("lazy").setup({
   'williamboman/mason-lspconfig.nvim',
   'neovim/nvim-lspconfig',
   'VonHeikemen/lsp-zero.nvim',
-  'jose-elias-alvarez/null-ls.nvim',
-  { 'folke/trouble.nvim', config = true },
-
+  --
   -- autocomplete
   'hrsh7th/cmp-nvim-lsp',
   'hrsh7th/cmp-nvim-lua',
@@ -223,19 +197,13 @@ wk.register({
     l = {
       name = "+LSP",
       m = { "<cmd>Mason<cr>", "[M]anage LSP" },
-      a = { name = "Code [A]ctions",
-        a = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "Code [A]ctions" },
-        r = { "<cmd>lua vim.lsp.buf.references()<cr>", "Lista all [R]eferences" },
-        f = { "<cmd>lua vim.lsp.buf.format()<cr>", "[F]ormat code" },
-        c = { "<cmd>lua vim.lsp.buf.rename()<cr>", "[C]hange name" },
-        s = { "<cmd>lua vim.lsp.buf.signature_help()<cr>", "[S]ignature help" },
-        d = { "<cmd>lua vim.lsp.buf.open_float()<cr>", "Show [D]iagnostics" },
-      },
-      l = { "<cmd>TroubleToggle document_diagnostics<cr>", "[L]ist diagnostics" },
-      q = { "<cmd>TroubleToggle quickfix<cr>", "List diagnostics [Q]uickfix" },
-      d = { "<cmd>TroubleToggle lsp_definitions<cr>", "Show [D]efinitions" },
-      t = { "<cmd>TroubleToggle lsp_type_definitions<cr>", "Show [T]ype definitions" },
-      r = { "<cmd>TroubleToggle lsp_references<cr>", "Show [R]eferences" },
+      a = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "Code [A]ctions" },
+      r = { "<cmd>Telescope lsp_references<cr>", "Show [R]eferences" },
+      i = { "<cmd>Telescope lsp_implementations<cr>", "Show [I]mplementation" },
+      f = { "<cmd>lua vim.lsp.buf.format()<cr>", "[F]ormat code" },
+      c = { "<cmd>lua vim.lsp.buf.rename()<cr>", "[C]hange name" },
+      s = { "<cmd>lua vim.lsp.buf.signature_help()<cr>", "[S]ignature help" },
+      d = { "<cmd>Telescope diagnostics<cr>", "Show [D]iagnostics" },
     },
     v = {
       name = "+Visual",
@@ -247,20 +215,19 @@ wk.register({
 })
 
 wk.register({
-  ["<leader>"] = {
-    r = {
-      name = "+Refactoring",
-      r = { "<cmd>lua require('telescope').extensions.refactoring.refactors()<CR>", "Select refactoring" },
+    ["<leader>"] = {
+      r = {
+        name = "+Refactoring",
+        r = { "<cmd>lua require('telescope').extensions.refactoring.refactors()<CR>", "Select refactoring" },
+      },
     },
   },
-},
   { mode = "v" })
 
 require('telescope').load_extension('projects')
 require('telescope').load_extension('refactoring')
 require('telescope').load_extension('ui-select')
 require("telescope").load_extension('harpoon')
-require "alpha".setup(require "alpha.themes.dashboard".config)
 
 local lsp = require('lsp-zero')
 
@@ -293,37 +260,18 @@ lsp.default_keymaps({
 
 lsp.setup()
 
-local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+vim.diagnostic.config({
+  virtual_lines = true,
+  virtual_text = true
+})
+vim.api.nvim_create_autocmd("CursorHold", {
+  callback = function()
+    vim.diagnostic.open_float()
+  end
+})
 
-local null_ls = require("null-ls")
-null_ls.setup({
-  sources = {
-    null_ls.builtins.diagnostics.cspell.with({
-      diagnostics_postprocess = function(diagnostic)
-        diagnostic.severity = vim.diagnostic.severity["WARN"]
-      end,
-    }),
-    null_ls.builtins.code_actions.cspell,
-    null_ls.builtins.code_actions.refactoring,
-    null_ls.builtins.formatting.eslint_d,
-    null_ls.builtins.code_actions.eslint_d,
-    null_ls.builtins.diagnostics.eslint_d,
-    null_ls.builtins.formatting.pint,
-    null_ls.builtins.diagnostics.phpstan,
-    null_ls.builtins.formatting.blade_formatter,
-  },
-  diagnostics_format = "#{m} - #{s} (#{c})",
-  -- you can reuse a shared lspconfig on_attach callback here
-  on_attach = function(client, bufnr)
-    if client.supports_method("textDocument/formatting") then
-      vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-      vim.api.nvim_create_autocmd("BufWritePre", {
-        group = augroup,
-        buffer = bufnr,
-        callback = function()
-          vim.lsp.buf.format({ bufnr = bufnr })
-        end,
-      })
-    end
-  end,
+vim.api.nvim_create_autocmd("BufWritePre", {
+  callback = function()
+    vim.lsp.buf.format()
+  end
 })
