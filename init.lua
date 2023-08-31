@@ -40,7 +40,6 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
-  'editorconfig/editorconfig-vim',
   'nvim-lua/plenary.nvim',
   { 'ahmedkhalf/project.nvim',       config = {},      name = 'project_nvim' }, -- manage projects
   { 'ThePrimeagen/refactoring.nvim', config = true },                           -- auto refactoring
