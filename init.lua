@@ -50,7 +50,14 @@ require("lazy").setup({
 
   -- Visual
   'nvim-treesitter/nvim-treesitter',
-  'vim-airline/vim-airline',
+  {
+    'nvim-lualine/lualine.nvim',
+    config = true,
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+    },
+  },
+
   { 'NLKNguyen/papercolor-theme', lazy = false },
 
   -- File Navigation
