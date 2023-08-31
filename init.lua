@@ -156,19 +156,7 @@ wk.register({
       c = {
         name = "+close",
         c = { "<cmd>bdelete<cr>", "Close [C]urrent" },
-        p = { "<cmd>BufferLinePickClose<cr>", "[P]ick to close" },
-        l = { "<cmd>BufferLineCloseLeft<cr>", "Close all [L]eft" },
-        r = { "<cmd>BufferLineCloseRight<cr>", "Close all [R]ight" },
       },
-      o = {
-        name = "+order",
-        h = { "<cmd>BufferLineMovePrev<cr>", "Prev" },
-        l = { "<cmd>BufferLineMoveNext<cr>", "Next" },
-        p = { "<cmd>BufferLineTogglePin<cr>", "[P]in" },
-      },
-      p = { "<cmd>BufferLinePick<cr>", "[P]ick" },
-      h = { "<cmd>BufferLineCyclePrev<cr>", "Prev" },
-      l = { "<cmd>BufferLineCycleNext<cr>", "Next" },
       L = { "<cmd>Telescope buffers<cr>", "[L]ist all" },
     },
     f = {
@@ -261,6 +249,7 @@ lsp.setup_nvim_cmp({
 local cmp = require('cmp')
 local cmp_mappings = lsp.defaults.cmp_mappings({
   ['<C-Space>'] = cmp.mapping.complete(),
+  ['<CR>'] = cmp.mapping.confirm({ select = true }),
 })
 
 lsp.setup_nvim_cmp({
