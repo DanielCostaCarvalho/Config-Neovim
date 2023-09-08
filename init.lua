@@ -41,11 +41,15 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   'nvim-lua/plenary.nvim',
-  { 'ahmedkhalf/project.nvim',       config = {},      name = 'project_nvim' }, -- manage projects
-  { 'ThePrimeagen/refactoring.nvim', config = true },                           -- auto refactoring
+  { 'ahmedkhalf/project.nvim',       config = {},  name = 'project_nvim' }, -- manage projects
+  { 'ThePrimeagen/refactoring.nvim', config = true },                       -- auto refactoring
 
   -- Telescope
-  { 'nvim-telescope/telescope.nvim', version = '0.1.0' },
+  {
+    'nvim-telescope/telescope.nvim',
+    version = '0.1.2',
+    dependencies = { 'nvim-lua/plenary.nvim' }
+  },
   'nvim-telescope/telescope-ui-select.nvim',
 
   -- Visual
@@ -199,8 +203,33 @@ wk.register({
       m = { "<cmd>lua require('harpoon.ui').toggle_quick_menu()<cr>", "Toggle [M]enu" },
       h = { "<cmd>lua require('harpoon.ui').nav_prev()<cr>", "Navigate to prev" },
       l = { "<cmd>lua require('harpoon.ui').nav_next()<cr>", "Navigate to next" },
+      n = {
+        name = "+Navigate",
+        q = { "<cmd>lua require('harpoon.ui').nav_file(1)<cr>", "Navigate to 1" },
+        w = { "<cmd>lua require('harpoon.ui').nav_file(2)<cr>", "Navigate to 2" },
+        e = { "<cmd>lua require('harpoon.ui').nav_file(3)<cr>", "Navigate to 3" },
+        r = { "<cmd>lua require('harpoon.ui').nav_file(4)<cr>", "Navigate to 4" },
+        t = { "<cmd>lua require('harpoon.ui').nav_file(5)<cr>", "Navigate to 5" },
+        y = { "<cmd>lua require('harpoon.ui').nav_file(6)<cr>", "Navigate to 6" },
+        u = { "<cmd>lua require('harpoon.ui').nav_file(7)<cr>", "Navigate to 7" },
+        i = { "<cmd>lua require('harpoon.ui').nav_file(8)<cr>", "Navigate to 8" },
+        o = { "<cmd>lua require('harpoon.ui').nav_file(9)<cr>", "Navigate to 9" },
+        p = { "<cmd>lua require('harpoon.ui').nav_file(10)<cr>", "Navigate to 10" },
+      },
       s = { "<cmd>Telescope harpoon marks<cr>", "[S]how marks" },
-      t = { "<cmd>lua require('harpoon.term').gotoTerminal(1)<cr>", "Open [T]erminal" },
+      t = {
+        name = "+Terminal",
+        q = { "<cmd>lua require('harpoon.term').gotoTerminal(1)<cr>", "Open Terminal 1" },
+        w = { "<cmd>lua require('harpoon.term').gotoTerminal(2)<cr>", "Open Terminal 2" },
+        e = { "<cmd>lua require('harpoon.term').gotoTerminal(3)<cr>", "Open Terminal 3" },
+        r = { "<cmd>lua require('harpoon.term').gotoTerminal(4)<cr>", "Open Terminal 4" },
+        t = { "<cmd>lua require('harpoon.term').gotoTerminal(5)<cr>", "Open Terminal 5" },
+        y = { "<cmd>lua require('harpoon.term').gotoTerminal(6)<cr>", "Open Terminal 6" },
+        u = { "<cmd>lua require('harpoon.term').gotoTerminal(7)<cr>", "Open Terminal 7" },
+        i = { "<cmd>lua require('harpoon.term').gotoTerminal(8)<cr>", "Open Terminal 8" },
+        o = { "<cmd>lua require('harpoon.term').gotoTerminal(9)<cr>", "Open Terminal 9" },
+        p = { "<cmd>lua require('harpoon.term').gotoTerminal(10)<cr>", "Open Terminal 10" },
+      },
     },
     l = {
       name = "+LSP",
