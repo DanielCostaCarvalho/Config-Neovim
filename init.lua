@@ -127,6 +127,44 @@ require("lazy").setup({
   'williamboman/mason-lspconfig.nvim',
   'neovim/nvim-lspconfig',
   'VonHeikemen/lsp-zero.nvim',
+  {
+    'jose-elias-alvarez/null-ls.nvim',
+    opts = function()
+      local null_ls = require("null-ls");
+      return {
+        sources = {
+          null_ls.builtins.diagnostics.cspell.with({
+            diagnostics_postprocess = function(diagnostic)
+              diagnostic.severity = vim.diagnostic.severity["WARN"]
+            end,
+          }),
+          null_ls.builtins.code_actions.cspell,
+          null_ls.builtins.code_actions.refactoring,
+          null_ls.builtins.formatting.rome,
+          null_ls.builtins.formatting.eslint_d,
+          null_ls.builtins.code_actions.eslint_d,
+          null_ls.builtins.diagnostics.eslint_d,
+          null_ls.builtins.formatting.pint,
+          null_ls.builtins.diagnostics.phpstan,
+          null_ls.builtins.formatting.blade_formatter,
+        },
+        diagnostics_format = "#{m} - #{s} (#{c})",
+        -- you can reuse a shared lspconfig on_attach callback here
+        on_attach = function(client, bufnr)
+          if client.supports_method("textDocument/formatting") then
+            vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+            vim.api.nvim_create_autocmd("BufWritePre", {
+              group = augroup,
+              buffer = bufnr,
+              callback = function()
+                vim.lsp.buf.format({ bufnr = bufnr, timeout_ms = 3000 })
+              end,
+            })
+          end
+        end,
+      }
+    end
+  },
   --
   -- autocomplete
   'hrsh7th/cmp-nvim-lsp',
@@ -305,11 +343,5 @@ vim.diagnostic.config({
 vim.api.nvim_create_autocmd("CursorHold", {
   callback = function()
     vim.diagnostic.open_float()
-  end
-})
-
-vim.api.nvim_create_autocmd("BufWritePre", {
-  callback = function()
-    vim.lsp.buf.format()
   end
 })
