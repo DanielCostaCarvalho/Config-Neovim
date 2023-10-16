@@ -19,6 +19,9 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
 
+--vim.opt.foldmethod = "indent"
+--vim.opt.foldlevel = 1
+
 vim.opt.clipboard = "unnamedplus"
 
 vim.opt.completeopt = "menuone,noinsert,noselect"
@@ -41,8 +44,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   'nvim-lua/plenary.nvim',
-  { 'ahmedkhalf/project.nvim',       config = true,  name = 'project_nvim' }, -- manage projects
-  { 'ThePrimeagen/refactoring.nvim', config = true },                       -- auto refactoring
+  { 'ahmedkhalf/project.nvim',    config = true,                          name = 'project_nvim' }, -- manage projects
 
   -- Telescope
   {
@@ -97,7 +99,7 @@ require("lazy").setup({
   },
 
   -- Git 	
-  { "NeogitOrg/neogit",      dependencies = "nvim-lua/plenary.nvim", config = true },
+  { "NeogitOrg/neogit",          dependencies = "nvim-lua/plenary.nvim", config = true },
   {
     'lewis6991/gitsigns.nvim',
     opts = {
@@ -111,7 +113,7 @@ require("lazy").setup({
     }
   },
 
-  -- HTTP requests
+  --HTTP requests
   {
     "rest-nvim/rest.nvim",
     dependencies = {
@@ -126,11 +128,14 @@ require("lazy").setup({
   'williamboman/mason.nvim',
   'williamboman/mason-lspconfig.nvim',
   'neovim/nvim-lspconfig',
-  'VonHeikemen/lsp-zero.nvim',
+  { 'VonHeikemen/lsp-zero.nvim', branch = 'v3.x' },
   {
-    'jose-elias-alvarez/null-ls.nvim',
+    'nvimtools/none-ls.nvim',
     opts = function()
       local null_ls = require("null-ls");
+      local h = require("null-ls.helpers");
+      local u = require("null-ls.utils");
+
       return {
         sources = {
           null_ls.builtins.diagnostics.cspell.with({
@@ -140,7 +145,7 @@ require("lazy").setup({
           }),
           null_ls.builtins.code_actions.cspell,
           null_ls.builtins.code_actions.refactoring,
-          null_ls.builtins.formatting.rome,
+          null_ls.builtins.formatting.biome,
           null_ls.builtins.formatting.eslint_d,
           null_ls.builtins.code_actions.eslint_d,
           null_ls.builtins.diagnostics.eslint_d,
@@ -157,11 +162,18 @@ require("lazy").setup({
               group = augroup,
               buffer = bufnr,
               callback = function()
-                vim.lsp.buf.format({ bufnr = bufnr, timeout_ms = 3000 })
+                vim.lsp.buf.format({
+                  bufnr = bufnr,
+                  timeout_ms = 3000,
+                  filter = function(client)
+                    return client.name == "null-ls"
+                  end,
+                })
               end,
             })
           end
         end,
+        temp_dir = "/tmp"
       }
     end
   },
@@ -181,7 +193,7 @@ require("lazy").setup({
   'L3MON4D3/LuaSnip',
 
   -- key bindings
-  { 'folke/which-key.nvim', config = true },
+  { 'folke/which-key.nvim',  config = true },
 })
 
 vim.cmd.colorscheme("PaperColor")
@@ -289,49 +301,49 @@ wk.register({
   },
 })
 
-wk.register({
-    ["<leader>"] = {
-      r = {
-        name = "+Refactoring",
-        r = { "<cmd>lua require('telescope').extensions.refactoring.refactors()<CR>", "Select refactoring" },
-      },
-    },
-  },
-  { mode = "v" })
-
 require('telescope').load_extension('projects')
-require('telescope').load_extension('refactoring')
 require('telescope').load_extension('ui-select')
 require("telescope").load_extension('harpoon')
 
-local lsp = require('lsp-zero')
+local lsp = require('lsp-zero').preset({})
+lsp.extend_lspconfig()
 
-lsp.preset('recommended')
+lsp.on_attach(function(client, bufnr)
+  -- see :help lsp-zero-keybindings
+  -- to learn the available actions
+  lsp.default_keymaps({
+    buffer = bufnr,
+    preserve_mappings = false
+  })
+end)
 
-lsp.nvim_workspace()
-lsp.setup_nvim_cmp({
+require('mason').setup({})
+require('mason-lspconfig').setup({
+  ensure_installed = {},
+  handlers = {
+    lsp.default_setup,
+  }
+})
+
+local cmp = require('cmp')
+local cmp_format = lsp.cmp_format()
+local cmp_action = lsp.cmp_action()
+require('luasnip.loaders.from_vscode').lazy_load()
+
+cmp.setup({
+  formatting = cmp_format,
+  mapping = cmp.mapping.preset.insert({
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+  }),
   completion = {
     keyword_length = 1
   },
   sources = {
     { name = "nvim_lsp", keyword_length = 1 },
     { name = "luasnip",  keyword_length = 1 },
+    { name = "buffer",   keyword_length = 1 },
   },
-})
-
-local cmp = require('cmp')
-local cmp_mappings = lsp.defaults.cmp_mappings({
-  ['<C-Space>'] = cmp.mapping.complete(),
-  ['<CR>'] = cmp.mapping.confirm({ select = true }),
-})
-
-lsp.setup_nvim_cmp({
-  mapping = cmp_mappings
-})
-
-lsp.default_keymaps({
-  buffer = bufnr,
-  preserve_mappings = false
 })
 
 lsp.setup()
