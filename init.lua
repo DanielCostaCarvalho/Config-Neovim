@@ -241,6 +241,12 @@ wk.register({
       s = { "<cmd>Telescope live_grep<cr>", "[S]earch in project" },
       f = { "<cmd>Telescope find_files<cr>", "Find [F]ile" },
     },
+    r = {
+      name = "+Rest",
+      r = { "<Plug>RestNvim", "[R]un request" },
+      p = { "<Plug>RestNvimPreview", "[P]preview request" },
+      l = { "<Plug>RestNvimLast", "run [L]ast request" },
+    },
     s = {
       name = "+Search",
       p = { "<cmd>Telescope live_grep<cr>", "Search in [P]roject" },
@@ -287,7 +293,7 @@ wk.register({
       a = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "Code [A]ctions" },
       r = { "<cmd>Telescope lsp_references<cr>", "Show [R]eferences" },
       i = { "<cmd>Telescope lsp_implementations<cr>", "Show [I]mplementation" },
-      f = { "<cmd>lua vim.lsp.buf.format()<cr>", "[F]ormat code" },
+      f = { "<cmd>lua vim.lsp.buf.format({ bufnr = bufnr, timeout_ms = 15000, filter = function(client) return client.name == 'null-ls' end, })<cr>", "[F]ormat code" },
       c = { "<cmd>lua vim.lsp.buf.rename()<cr>", "[C]hange name" },
       s = { "<cmd>lua vim.lsp.buf.signature_help()<cr>", "[S]ignature help" },
       d = { "<cmd>Telescope diagnostics<cr>", "Show [D]iagnostics" },
