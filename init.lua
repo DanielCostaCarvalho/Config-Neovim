@@ -74,6 +74,14 @@ require("lazy").setup({
 		config = {
 			settings = {
 				save_on_toggle = true,
+				sync_on_ui_close = true,
+			},
+			terms = {
+				settings = {
+					save_on_toggle = false,
+					select_with_nil = false,
+					sync_on_ui_close = false,
+				},
 			},
 		},
 	},
@@ -222,6 +230,44 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
 local harpoon = require("harpoon")
 
+---@type HarpoonList
+local term_list = harpoon.list("terms")
+
+---@return string name of the created terminal
+local function create_terminal()
+	vim.cmd("terminal")
+	local buf_id = vim.api.nvim_get_current_buf()
+	return vim.api.nvim_buf_get_name(buf_id)
+end
+
+---@param index number: The index of the terminal to select.
+local function select_term(index)
+	if index > term_list:length() then
+		create_terminal()
+		print("Creating terminal", index)
+		-- just append the newly open terminal
+		term_list:append()
+	else
+		-- find in list
+		print("selecting terminal", index)
+		term_list:select(index)
+	end
+end
+
+-- Autocommand to remove closed terminal from the list
+vim.api.nvim_create_autocmd("TermClose", {
+	pattern = "*",
+	callback = function(_)
+		for _, term in ipairs(term_list.items) do
+			local bufnr = vim.fn.bufnr(term.value)
+			if bufnr == -1 then
+				print("Removing:" .. term.value)
+				term_list:remove(term)
+			end
+		end
+	end,
+})
+
 local wk = require("which-key")
 
 wk.register({
@@ -249,7 +295,12 @@ wk.register({
 		o = {
 			name = "+open",
 			p = { "<cmd>NvimTreeToggle<cr>", "[P]roject sidebar" },
-			t = { "<cmd>lua require('harpoon.term').gotoTerminal(1)<cr>", "[T]erminal" },
+			t = {
+				function()
+					select_term(1)
+				end,
+				"[T]erminal",
+			},
 		},
 		g = {
 			name = "+git",
@@ -366,16 +417,72 @@ wk.register({
 			s = { "<cmd>Telescope harpoon marks<cr>", "[S]how marks" },
 			t = {
 				name = "+Terminal",
-				q = { "<cmd>lua require('harpoon.term').gotoTerminal(1)<cr>", "Open Terminal 1" },
-				w = { "<cmd>lua require('harpoon.term').gotoTerminal(2)<cr>", "Open Terminal 2" },
-				e = { "<cmd>lua require('harpoon.term').gotoTerminal(3)<cr>", "Open Terminal 3" },
-				r = { "<cmd>lua require('harpoon.term').gotoTerminal(4)<cr>", "Open Terminal 4" },
-				t = { "<cmd>lua require('harpoon.term').gotoTerminal(5)<cr>", "Open Terminal 5" },
-				y = { "<cmd>lua require('harpoon.term').gotoTerminal(6)<cr>", "Open Terminal 6" },
-				u = { "<cmd>lua require('harpoon.term').gotoTerminal(7)<cr>", "Open Terminal 7" },
-				i = { "<cmd>lua require('harpoon.term').gotoTerminal(8)<cr>", "Open Terminal 8" },
-				o = { "<cmd>lua require('harpoon.term').gotoTerminal(9)<cr>", "Open Terminal 9" },
-				p = { "<cmd>lua require('harpoon.term').gotoTerminal(10)<cr>", "Open Terminal 10" },
+				m = {
+					function()
+						harpoon.ui:toggle_quick_menu(harpoon:list("terms"))
+					end,
+					"Toggle [M]enu",
+				},
+				q = {
+					function()
+						select_term(1)
+					end,
+					"Open Terminal 1",
+				},
+				w = {
+					function()
+						select_term(2)
+					end,
+					"Open Terminal 2",
+				},
+				e = {
+					function()
+						select_term(3)
+					end,
+					"Open Terminal 3",
+				},
+				r = {
+					function()
+						select_term(4)
+					end,
+					"Open Terminal 4",
+				},
+				t = {
+					function()
+						select_term(5)
+					end,
+					"Open Terminal 5",
+				},
+				y = {
+					function()
+						select_term(6)
+					end,
+					"Open Terminal 6",
+				},
+				u = {
+					function()
+						select_term(7)
+					end,
+					"Open Terminal 7",
+				},
+				i = {
+					function()
+						select_term(8)
+					end,
+					"Open Terminal 8",
+				},
+				o = {
+					function()
+						select_term(9)
+					end,
+					"Open Terminal 9",
+				},
+				p = {
+					function()
+						select_term(10)
+					end,
+					"Open Terminal 10",
+				},
 			},
 		},
 		l = {
@@ -385,7 +492,9 @@ wk.register({
 			r = { "<cmd>Telescope lsp_references<cr>", "Show [R]eferences" },
 			i = { "<cmd>Telescope lsp_implementations<cr>", "Show [I]mplementation" },
 			f = {
-				"<cmd>lua vim.lsp.buf.format({ bufnr = bufnr, timeout_ms = 15000, filter = function(client) return client.name == 'null-ls' end, })<cr>",
+				function()
+					vim.lsp.buf.format({ bufnr = bufnr, timeout_ms = 15000 })
+				end,
 				"[F]ormat code",
 			},
 			c = { "<cmd>lua vim.lsp.buf.rename()<cr>", "[C]hange name" },
