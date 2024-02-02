@@ -231,7 +231,7 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 local harpoon = require("harpoon")
 
 ---@type HarpoonList
-local term_list = harpoon.list("terms")
+local term_list = harpoon:list("terms")
 
 ---@return string name of the created terminal
 local function create_terminal()
