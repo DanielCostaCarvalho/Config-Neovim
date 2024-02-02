@@ -96,6 +96,9 @@ require("lazy").setup({
 				enable = true,
 				update_root = true,
 			},
+			view = {
+			  side = 'right',
+      },
 			diagnostics = {
 				enable = true,
 				show_on_dirs = false,
