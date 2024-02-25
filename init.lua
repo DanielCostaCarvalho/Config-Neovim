@@ -146,9 +146,11 @@ require("lazy").setup({
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 		},
-		opts = {
-			jump_to_request = true,
-		},
+		config = function ()
+		  require("rest-nvim").setup({
+        jump_to_request = true,
+		  })
+		end,
 	},
 
 	-- lsp
