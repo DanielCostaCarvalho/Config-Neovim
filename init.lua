@@ -30,7 +30,7 @@ vim.g.mapleader = " "
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
-if not vim.loop.fs_stat(lazypath) then
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
 		"clone",
@@ -42,10 +42,11 @@ if not vim.loop.fs_stat(lazypath) then
 end
 
 vim.opt.rtp:prepend(lazypath)
+
 require("lazy").setup({
 	"nvim-lua/plenary.nvim",
 	{ "ahmedkhalf/project.nvim", config = true, name = "project_nvim" }, -- manage projects
-
+	"LunarVim/bigfile.nvim",
 	-- Telescope
 	{
 		"nvim-telescope/telescope.nvim",
@@ -66,12 +67,22 @@ require("lazy").setup({
 
 	{ "NLKNguyen/papercolor-theme", lazy = false },
 
+	-- Notes
+	{
+		"zk-org/zk-nvim",
+		config = function()
+			require("zk").setup({
+				picker = "telescope",
+			})
+		end,
+	},
+
 	-- File Navigation
 	{
 		"ThePrimeagen/harpoon",
 		branch = "harpoon2",
 		dependencies = "nvim-lua/plenary.nvim",
-		config = {
+		opts = {
 			settings = {
 				save_on_toggle = true,
 				sync_on_ui_close = true,
@@ -97,8 +108,8 @@ require("lazy").setup({
 				update_root = true,
 			},
 			view = {
-			  side = 'right',
-      },
+				side = "right",
+			},
 			diagnostics = {
 				enable = true,
 				show_on_dirs = false,
@@ -146,11 +157,12 @@ require("lazy").setup({
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 		},
-		config = function ()
-		  require("rest-nvim").setup({
-        jump_to_request = true,
-		  })
+		config = function()
+			require("rest-nvim").setup({
+				jump_to_request = true,
+			})
 		end,
+		version = "1.1",
 	},
 
 	-- lsp
@@ -159,54 +171,20 @@ require("lazy").setup({
 	"neovim/nvim-lspconfig",
 	{ "VonHeikemen/lsp-zero.nvim", branch = "v3.x" },
 	{
-		"nvimtools/none-ls.nvim",
-		opts = function()
-			local null_ls = require("null-ls")
-			local h = require("null-ls.helpers")
-			local u = require("null-ls.utils")
-
-			return {
-				sources = {
-					null_ls.builtins.diagnostics.cspell.with({
-						diagnostics_postprocess = function(diagnostic)
-							diagnostic.severity = vim.diagnostic.severity["WARN"]
-						end,
-					}),
-					null_ls.builtins.code_actions.cspell,
-					null_ls.builtins.code_actions.refactoring,
-					null_ls.builtins.formatting.biome,
-					null_ls.builtins.formatting.biome,
-					null_ls.builtins.formatting.eslint_d,
-					null_ls.builtins.code_actions.eslint_d,
-					null_ls.builtins.diagnostics.eslint_d,
-					null_ls.builtins.formatting.pint,
-					null_ls.builtins.diagnostics.phpstan,
-					null_ls.builtins.formatting.blade_formatter,
-					null_ls.builtins.formatting.stylua,
-				},
-				diagnostics_format = "#{m} - #{s} (#{c})",
-				-- you can reuse a shared lspconfig on_attach callback here
-				on_attach = function(client, bufnr)
-					if client.supports_method("textDocument/formatting") then
-						vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-						vim.api.nvim_create_autocmd("BufWritePre", {
-							group = augroup,
-							buffer = bufnr,
-							callback = function()
-								vim.lsp.buf.format({
-									bufnr = bufnr,
-									timeout_ms = 3000,
-									filter = function(client)
-										return client.name == "null-ls"
-									end,
-								})
-							end,
-						})
-					end
-				end,
-				temp_dir = "/tmp",
-			}
-		end,
+		"stevearc/conform.nvim",
+		opts = {
+			formatters_by_ft = {
+				lua = { "stylua" },
+				php = { "pint", "phpinsights" },
+				javascript = { { "biome", "eslint_d" } },
+				typescript = { { "biome", "eslint_d" } },
+			},
+			format_on_save = {
+				-- These options will be passed to conform.format()
+				timeout_ms = 1000,
+				lsp_fallback = true,
+			},
+		},
 	},
 	--
 	-- autocomplete
@@ -251,7 +229,7 @@ local function select_term(index)
 		create_terminal()
 		print("Creating terminal", index)
 		-- just append the newly open terminal
-		term_list:append()
+		term_list:add()
 	else
 		-- find in list
 		print("selecting terminal", index)
@@ -334,7 +312,7 @@ wk.register({
 			name = "+Harpoon",
 			a = {
 				function()
-					harpoon:list():append()
+					harpoon:list():add()
 				end,
 				"[A]dd file",
 			},
@@ -503,6 +481,12 @@ wk.register({
 				"[F]ormat code",
 			},
 			c = { "<cmd>lua vim.lsp.buf.rename()<cr>", "[C]hange name" },
+			h = {
+				function()
+					vim.lsp.buf.hover()
+				end,
+				"[H]over code",
+			},
 			s = { "<cmd>lua vim.lsp.buf.signature_help()<cr>", "[S]ignature help" },
 			d = { "<cmd>Telescope diagnostics<cr>", "Show [D]iagnostics" },
 		},
@@ -511,6 +495,13 @@ wk.register({
 			c = { "<cmd>Telescope colorscheme<cr>", "Select [C]olorscheme" },
 			l = { "<cmd>set background=light<cr>", "Set [L]ight background" },
 			d = { "<cmd>set background=dark<cr>", "Set [D]ark background" },
+		},
+		n = {
+			name = "+Notes",
+			n = { "<cmd>ZkNew<cr>", "[N]ew note" },
+			d = { "<cmd>ZkNew { dir = 'daily', date = 'today' }<cr>", "New [D]aily note" },
+			w = { "<cmd>ZkNew { dir = 'work' }<cr>", "New [W]ork note" },
+			s = { "<cmd>ZkNotes<cr>", "[S]earch note" },
 		},
 	},
 })
