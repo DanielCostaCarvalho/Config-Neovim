@@ -65,8 +65,6 @@ require("lazy").setup({
 		},
 	},
 
-	{ "NLKNguyen/papercolor-theme", lazy = false },
-
 	-- Notes
 	{
 		"zk-org/zk-nvim",
@@ -137,7 +135,12 @@ require("lazy").setup({
 	},
 
 	-- Git
-	{ "NeogitOrg/neogit", dependencies = "nvim-lua/plenary.nvim", config = true },
+	{
+		"NeogitOrg/neogit",
+		dependencies = { "nvim-lua/plenary.nvim", "sindrets/diffview.nvim" },
+		config = true,
+		branch = "nightly",
+	},
 	{
 		"lewis6991/gitsigns.nvim",
 		opts = {
@@ -204,8 +207,6 @@ require("lazy").setup({
 	-- key bindings
 	{ "folke/which-key.nvim", config = true },
 })
-
-vim.cmd.colorscheme("PaperColor")
 
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>")
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
@@ -324,13 +325,13 @@ wk.register({
 			},
 			h = {
 				function()
-					harpoon:list():prev()
+					harpoon:list():prev({ ui_nav_wrap = true })
 				end,
 				"Navigate to prev",
 			},
 			l = {
 				function()
-					harpoon:list():next()
+					harpoon:list():next({ ui_nav_wrap = true })
 				end,
 				"Navigate to next",
 			},
