@@ -58,6 +58,12 @@ require("lazy").setup({
 	-- Visual
 	"nvim-treesitter/nvim-treesitter",
 	{
+		"folke/tokyonight.nvim",
+		lazy = false,
+		priority = 1000,
+		opts = {},
+	},
+	{
 		"nvim-lualine/lualine.nvim",
 		config = true,
 		dependencies = {
@@ -139,7 +145,7 @@ require("lazy").setup({
 		"NeogitOrg/neogit",
 		dependencies = { "nvim-lua/plenary.nvim", "sindrets/diffview.nvim" },
 		config = true,
-		branch = "nightly",
+		branch = "master",
 	},
 	{
 		"lewis6991/gitsigns.nvim",
@@ -208,6 +214,9 @@ require("lazy").setup({
 	{ "folke/which-key.nvim", config = true },
 })
 
+vim.cmd.colorscheme("tokyonight-day")
+
+vim.keymap.set("x", "<leader>p", [["_dP]])
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>")
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
@@ -305,7 +314,9 @@ wk.register({
 		},
 		s = {
 			name = "+Search",
-			p = { "<cmd>Telescope live_grep<cr>", "Search in [P]roject" },
+			p = { "<cmd>Telescope projects<cr>", "Open [P]roject" },
+			f = { "<cmd>Telescope find_files<cr>", "Find [F]ile" },
+			s = { "<cmd>Telescope live_grep<cr>", "[S]earch in project" },
 			w = { "<cmd>Telescope grep_string<cr>", "Search [W]ord in Project" },
 			r = { [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], "Search and [R]eplace" },
 		},
@@ -499,9 +510,67 @@ wk.register({
 		},
 		n = {
 			name = "+Notes",
-			n = { "<cmd>ZkNew<cr>", "[N]ew note" },
-			d = { "<cmd>ZkNew { dir = 'daily', date = 'today' }<cr>", "New [D]aily note" },
-			w = { "<cmd>ZkNew { dir = 'work' }<cr>", "New [W]ork note" },
+			n = {
+				"+New note",
+				n = {
+					function()
+						require("zk.commands").get("ZkNew")({ title = vim.fn.input("Título: ") })
+					end,
+					"[N]ew note",
+				},
+				f = {
+					function()
+						require("zk.commands").get("ZkNew")({ dir = "fleeting", title = vim.fn.input("Título: ") })
+					end,
+					"New [F]leeting note",
+				},
+				r = {
+					function()
+						require("zk.commands").get("ZkNew")({ dir = "raw", title = vim.fn.input("Título: ") })
+					end,
+					"New [R]aw highlight",
+				},
+				l = {
+					function()
+						require("zk.commands").get("ZkNew")({ dir = "literature", title = vim.fn.input("Título: ") })
+					end,
+					"New [L]iterature note",
+				},
+				p = {
+					function()
+						require("zk.commands").get("ZkNew")({ dir = "permanent", title = vim.fn.input("Título: ") })
+					end,
+					"New [P]ermanent note",
+				},
+				w = {
+					function()
+						require("zk.commands").get("ZkNew")({ dir = "work", title = vim.fn.input("Título: ") })
+					end,
+					"New [W]ork note",
+				},
+				d = {
+					function()
+						require("zk.commands").get("ZkNew")({ dir = "journal/daily", date = "today" })
+					end,
+					"New [D]aily note",
+				},
+				m = {
+					function()
+						require("zk.commands").get("ZkNew")({ dir = "maybe", title = vim.fn.input("Título: ") })
+					end,
+					"New [M]aybe note",
+				},
+				j = {
+					function()
+						require("zk.commands").get("ZkNew")({
+							dir = "jiu-jitsu",
+							extra = { tags = "#jiu-jitsu#" },
+							title = vim.fn.input("Título: "),
+						})
+					end,
+					"New [J]iu-jitsu note",
+				},
+			},
 			s = { "<cmd>ZkNotes<cr>", "[S]earch note" },
 		},
 	},
@@ -525,7 +594,7 @@ end)
 
 require("mason").setup({})
 require("mason-lspconfig").setup({
-	ensure_installed = {},
+	ensure_installed = { "lua_ls", "zk", "biome", "intelephense" },
 	handlers = {
 		lsp.default_setup,
 	},
@@ -563,3 +632,7 @@ vim.api.nvim_create_autocmd("CursorHold", {
 		vim.diagnostic.open_float()
 	end,
 })
+
+vim.filetype.add({ extension = { p8 = "p8" } })
+vim.treesitter.language.register("lua", "p8")
+vim.env.ZK_NOTEBOOK_DIR = os.getenv("HOME") .. "/arquivos/zk"
